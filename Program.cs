@@ -25,6 +25,14 @@ builder.Services.AddOpenApi(options =>
             new() { Name = "Cargo", Description = "Операции с грузами на складе" }
         };
 
+        // Относительный адрес сервера позволяет Swagger UI и Scalar обращаться к API
+        // по тому же протоколу и хосту, на котором открыта документация.
+        // Это важно на Render: снаружи используется HTTPS, а внутри контейнера — HTTP.
+        document.Servers = new List<OpenApiServer>
+        {
+            new() { Url = "/" }
+        };
+
         return Task.CompletedTask;
     });
 });
