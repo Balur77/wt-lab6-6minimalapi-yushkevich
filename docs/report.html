@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<title>WT-6 — ASP.NET Core Minimal API — Юшкевич Владислав</title>
+<link rel="stylesheet" href="report/report.css" />
+</head>
+<body>
+
+<!-- 01. Обложка -->
+<section class="sheet cover">
+    <div class="cover-inner">
+        <div class="cover-top">
+            <div class="cover-brand">
+                <span class="cover-mark">◆</span>
+                <span class="brand-name">Cargo<span>Flow</span></span>
+            </div>
+            <span class="wt">ЛАБОРАТОРНАЯ РАБОТА · WT-6</span>
+        </div>
+
+        <div class="cover-kicker">Отчёт о выполнении работы</div>
+        <h1>REST API на ASP.NET Core <em>Minimal API</em></h1>
+        <div class="cover-sub">
+            Учёт грузов на складе: CRUD, JSON, HTTP-статусы, OpenAPI/Swagger,
+            Docker и публикация на Render.
+        </div>
+
+        <div class="pill-row">
+            <span class="pill">ASP.NET Core 9</span>
+            <span class="pill">Minimal API</span>
+            <span class="pill">OpenAPI</span>
+            <span class="pill">Swagger UI</span>
+            <span class="pill">Docker</span>
+            <span class="pill">Render</span>
+        </div>
+
+        <div class="cover-spacer"></div>
+
+        <div class="cover-info">
+            <div>
+                <span class="lbl">Студент</span>
+                <span class="val">Юшкевич Владислав</span>
+            </div>
+            <div>
+                <span class="lbl">Дисциплина</span>
+                <span class="val">Веб-технологии · лабораторная WT-6</span>
+            </div>
+            <div>
+                <span class="lbl">Дата</span>
+                <span class="val">1 ноября 2026 г.</span>
+            </div>
+            <div>
+                <span class="lbl">Тема</span>
+                <span class="val">ASP.NET Core Minimal API, REST, Docker</span>
+            </div>
+            <div>
+                <span class="lbl">Репозиторий</span>
+                <span class="val"><a href="https://github.com/Balur77/wt-lab6-6minimalapi-yushkevich">github.com/Balur77/wt-lab6-6minimalapi-yushkevich</a></span>
+            </div>
+            <div>
+                <span class="lbl">Приложение</span>
+                <span class="val"><a href="https://wt-lab6-6minimalapi-yushkevich.onrender.com">wt-lab6-6minimalapi-yushkevich.onrender.com</a></span>
+            </div>
+        </div>
+
+        <div class="links-box">
+            Публичный URL: <a href="https://wt-lab6-6minimalapi-yushkevich.onrender.com">https://wt-lab6-6minimalapi-yushkevich.onrender.com</a><br />
+            Git-репозиторий: <a href="https://github.com/Balur77/wt-lab6-6minimalapi-yushkevich">https://github.com/Balur77/wt-lab6-6minimalapi-yushkevich</a>
+        </div>
+
+        <div class="cover-sign">
+            <div>Отчёт составлен по фактически выполненной работе</div>
+            <div>Подпись: <span class="sign-line"></span> <span class="sign-name">Юшкевич В.</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- 02. Цель и задачи -->
+<section class="sheet">
+    <div class="page-head"><span class="kicker">Введение</span><span class="page-tag">02 / 13</span></div>
+    <h1>Цель работы и задачи</h1>
+
+    <p class="lead">
+        Цель работы — освоить разработку REST API с использованием
+        <strong>ASP.NET Core Minimal API</strong>: маршрутизацию, передачу данных в JSON,
+        параметры маршрута и query-параметры, корректные HTTP-статусы, описание API
+        через OpenAPI, сборку в Docker и публикацию на Render.
+    </p>
+
+    <h3>Задачи</h3>
+    <ol>
+        <li>Создать проект ASP.NET Core Minimal API и проверить его запуск.</li>
+        <li>Перенести модель предметной области <code>Cargo</code> из WT-4/WT-5.</li>
+        <li>Реализовать общее хранилище данных в памяти приложения.</li>
+        <li>Реализовать операции <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>.</li>
+        <li>Добавить поиск, фильтрацию, валидацию и корректные HTTP-статусы.</li>
+        <li>Подключить OpenAPI, Swagger UI и Scalar UI.</li>
+        <li>Собрать Docker-образ, разместить проект в Git и опубликовать на Render.</li>
+    </ol>
+
+    <h3>Кратко о результате</h3>
+    <table class="meta compact">
+        <tr><td style="width:35mm">Проект</td><td>wt-lab6-6minimalapi-yushkevich</td></tr>
+        <tr><td>Предметная область</td><td>Склад и логистика, основная сущность — <code>Cargo</code></td></tr>
+        <tr><td>Стек</td><td>.NET 9, ASP.NET Core Minimal API, System.Text.Json</td></tr>
+        <tr><td>Хранение</td><td>Коллекция <code>List&lt;Cargo&gt;</code> в статическом классе <code>CargoStore</code></td></tr>
+        <tr><td>Документация</td><td><code>/openapi/v1.json</code>, <code>/swagger</code>, <code>/scalar/v1</code></td></tr>
+        <tr><td>Контейнер</td><td>Docker, многоэтапная сборка, порт из переменной <code>PORT</code></td></tr>
+        <tr><td>Публикация</td><td>Render Web Service (Runtime: Docker), статус <strong>Live</strong></td></tr>
+        <tr><td>Репозиторий</td><td><a href="https://github.com/Balur77/wt-lab6-6minimalapi-yushkevich">github.com/Balur77/wt-lab6-6minimalapi-yushkevich</a></td></tr>
+        <tr><td>Публичный URL</td><td><a href="https://wt-lab6-6minimalapi-yushkevich.onrender.com">wt-lab6-6minimalapi-yushkevich.onrender.com</a></td></tr>
+    </table>
+
+    <div class="callout">
+        <span class="label">Что проверено</span>
+        API собрано локально, запущено в Docker-контейнере и опубликовано на Render.
+        Публичные <code>GET /</code>, <code>GET /api/info</code>, <code>GET /api/cargoes</code>,
+        <code>GET /api/cargoes/1</code>, <code>/swagger</code> и <code>/openapi/v1.json</code>
+        отвечают кодом <strong>HTTP 200</strong>. Полный цикл CRUD выполнен и локально, и на Render.
+    </div>
+
+    <div class="footer"><span><b>CargoFlow API</b> · WT-6 Minimal API</span><span class="pnum">02</span></div>
+</section>
+
+<!-- 03. Домен и структура -->
+<section class="sheet">
+    <div class="page-head"><span class="kicker">Предметная область</span><span class="page-tag">03 / 13</span></div>
+    <h1>Домен и структура проекта</h1>
+
+    <p class="lead">
+        CargoFlow автоматизирует базовый учёт грузов на складе. Предметная область
+        и основная сущность <code>Cargo</code> перенесены из лабораторных работ WT-4 (MVC)
+        и WT-5 (Razor Pages), поэтому API продолжает уже выбранный домен.
+    </p>
+
+    <table class="meta compact">
+        <tr><th style="width:34mm">Свойство</th><th style="width:22mm">Тип</th><th>Назначение</th></tr>
+        <tr><td><code>Id</code></td><td><code>int</code></td><td>Идентификатор, назначается сервером</td></tr>
+        <tr><td><code>Name</code></td><td><code>string</code></td><td>Название груза</td></tr>
+        <tr><td><code>Category</code></td><td><code>string</code></td><td>Категория груза</td></tr>
+        <tr><td><code>Quantity</code></td><td><code>int</code></td><td>Количество единиц</td></tr>
+        <tr><td><code>Location</code></td><td><code>string</code></td><td>Место хранения на складе</td></tr>
+        <tr><td><code>Weight</code></td><td><code>decimal</code></td><td>Вес одной единицы, кг</td></tr>
+        <tr><td><code>Description</code></td><td><code>string</code></td><td>Описание груза</td></tr>
+        <tr><td><code>IsAvailable</code></td><td><code>bool</code></td><td>Признак наличия на складе</td></tr>
+        <tr><td><code>TotalWeight</code></td><td><code>decimal</code></td><td>Общий вес партии, вычисляется</td></tr>
+        <tr><td><code>Status</code></td><td><code>string</code></td><td>Текстовый статус, вычисляется</td></tr>
+    </table>
+
+    <h3>Структура проекта</h3>
+    <div class="tree">wt-lab6-6minimalapi-yushkevich/
+├── Models/
+│   └── Cargo.cs                  <span class="c"># модель предметной области</span>
+├── Data/
+│   └── CargoStore.cs             <span class="c"># единое хранилище в памяти</span>
+├── Properties/
+│   └── launchSettings.json
+├── docs/
+│   ├── api-testing.md            <span class="c"># лог тестирования</span>
+│   └── report.html               <span class="c"># исходник отчёта</span>
+├── Program.cs                    <span class="c"># endpoints, OpenAPI, запуск</span>
+├── Dockerfile                    <span class="c"># многоэтапная сборка</span>
+├── requests.http                 <span class="c"># готовые HTTP-запросы</span>
+├── README.md
+└── wt-lab6-6minimalapi-yushkevich.csproj</div>
+
+    <div class="note">
+        Данные хранятся <strong>в памяти приложения</strong>. Это соответствует условиям
+        лабораторной работы: PostgreSQL, Entity Framework Core и другие ORM не используются.
+        После перезапуска сервиса коллекция восстанавливается из начального набора.
+    </div>
+
+    <div class="footer"><span><b>CargoFlow API</b> · WT-6 Minimal API</span><span class="pnum">03</span></div>
+</section>
+
+<!-- 04. Модель и хранилище -->
+<section class="sheet">
+    <div class="page-head"><span class="kicker">Данные</span><span class="page-tag">04 / 13</span></div>
+    <h1>Модель и хранилище</h1>
+
+    <h3>Models/Cargo.cs</h3>
+    <pre class="code">public class Cargo
+{
+    public int Id { get; set; }
+
+    [Required, StringLength(100)]
+    public string Name { get; set; } = string.Empty;
+
+    [Required, StringLength(60)]
+    public string Category { get; set; } = string.Empty;
+
+    [Range(1, 1_000_000)]
+    public int Quantity { get; set; } = 1;
+
+    [Required, StringLength(100)]
+    public string Location { get; set; } = string.Empty;
+
+    [Range(0.01, 1_000_000_000)]
+    public decimal Weight { get; set; }
+
+    [Required, StringLength(300)]
+    public string Description { get; set; } = string.Empty;
+
+    public bool IsAvailable { get; set; } = true;
+
+    public decimal TotalWeight =&gt; Math.Round(Weight * Quantity, 2);
+
+    public string Status =&gt; IsAvailable ? "На складе" : "Нет в наличии";
+}</pre>
+
+    <h3>Data/CargoStore.cs — фрагмент</h3>
+    <pre class="code">public static class CargoStore
+{
+    public static object SyncRoot { get; } = new();
+
+    public static List&lt;Cargo&gt; Cargoes { get; } = new()
+    {
+        new Cargo
+        {
+            Id = 1,
+            Name = "Ноутбуки Dell Latitude 5440",
+            Category = "Электроника",
+            Quantity = 24,
+            Location = "Сектор A-1, стеллаж 3",
+            Weight = 2.4m,
+            Description = "Партия офисных ноутбуков...",
+            IsAvailable = true
+        },
+        // ... всего шесть начальных объектов
+    };
+
+    public static int GetNextId() =&gt;
+        Cargoes.Count == 0 ? 1 : Cargoes.Max(cargo =&gt; cargo.Id) + 1;
+}</pre>
+
+    <ul class="small">
+        <li>Одна коллекция используется всеми endpoint'ами, поэтому изменения сразу видны при следующем запросе.</li>
+        <li><code>GetNextId()</code> назначает идентификатор на сервере: <code>Max(Id) + 1</code>.</li>
+        <li><code>SyncRoot</code> защищает коллекцию от одновременных изменений из параллельных HTTP-запросов.</li>
+        <li>Вычисляемые <code>TotalWeight</code> и <code>Status</code> попадают в JSON-ответ, но не принимаются из тела запроса.</li>
+    </ul>
+
+    <div class="footer"><span><b>CargoFlow API</b> · WT-6 Minimal API</span><span class="pnum">04</span></div>
+</section>
+
+<!-- 05. API и GET -->
+<section class="sheet">
+    <div class="page-head"><span class="kicker">Маршрутизация</span><span class="page-tag">05 / 13</span></div>
+    <h1>API и GET-запросы</h1>
+
+    <table class="meta compact">
+        <tr><th style="width:18mm">Метод</th><th style="width:55mm">URL</th><th>Назначение</th><th style="width:25mm">Статус</th></tr>
+        <tr><td><span class="badge">GET</span></td><td><code>/</code></td><td>Проверка работы приложения</td><td>200</td></tr>
+        <tr><td><span class="badge">GET</span></td><td><code>/api/info</code></td><td>Информация о приложении</td><td>200</td></tr>
+        <tr><td><span class="badge">GET</span></td><td><code>/api/cargoes</code></td><td>Список грузов</td><td>200</td></tr>
+        <tr><td><span class="badge">GET</span></td><td><code>/api/cargoes/{id}</code></td><td>Груз по идентификатору</td><td>200 / 404</td></tr>
+        <tr><td><span class="badge">GET</span></td><td><code>/api/cargoes?search=...</code></td><td>Поиск и фильтрация</td><td>200</td></tr>
+        <tr><td><span class="badge">POST</span></td><td><code>/api/cargoes</code></td><td>Создать груз</td><td>201 / 400</td></tr>
+        <tr><td><span class="badge">PUT</span></td><td><code>/api/cargoes/{id}</code></td><td>Изменить груз</td><td>200 / 400 / 404</td></tr>
+        <tr><td><span class="badge">DELETE</span></td><td><code>/api/cargoes/{id}</code></td><td>Удалить груз</td><td>204 / 404</td></tr>
+    </table>
+
+    <p class="small">
+        Query-параметр <code>search</code> ищет по названию, категории, месту хранения и описанию
+        без учёта регистра. Дополнительно поддерживаются <code>category</code> и
+        <code>available</code>.
+    </p>
+
+    <h3>GET /api/cargoes — список и фильтрация</h3>
+    <pre class="code">app.MapGet("/api/cargoes", (string? search, string? category, bool? available) =&gt;
+{
+    List&lt;Cargo&gt; snapshot;
+    lock (CargoStore.SyncRoot)
+    {
+        snapshot = CargoStore.Cargoes.ToList();
+    }
+
+    IEnumerable&lt;Cargo&gt; cargoes = snapshot;
+
+    if (!string.IsNullOrWhiteSpace(search))
+    {
+        var query = search.Trim();
+        cargoes = cargoes.Where(cargo =&gt;
+            cargo.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+            cargo.Category.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+            cargo.Location.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+            cargo.Description.Contains(query, StringComparison.OrdinalIgnoreCase));
+    }
+
+    if (available is not null)
+    {
+        cargoes = cargoes.Where(cargo =&gt; cargo.IsAvailable == available);
+    }
+
+    return Results.Ok(cargoes.OrderBy(cargo =&gt; cargo.Id));
+});</pre>
+
+    <div class="footer"><span><b>CargoFlow API</b> · WT-6 Minimal API</span><span class="pnum">05</span></div>
+</section>
+
+<!-- 06. GET по id и POST -->
+<section class="sheet">
+    <div class="page-head"><span class="kicker">CRUD</span><span class="page-tag">06 / 13</span></div>
+    <h1>GET по id и POST</h1>
+
+    <h3>GET /api/cargoes/{id}</h3>
+    <pre class="code">app.MapGet("/api/cargoes/{id:int}", (int id) =&gt;
+{
+    Cargo? cargo;
+    lock (CargoStore.SyncRoot)
+    {
+        cargo = CargoStore.Cargoes.FirstOrDefault(item =&gt; item.Id == id);
+    }
+
+    return cargo is null
+        ? Results.NotFound()
+        : Results.Ok(cargo);
+});</pre>
+
+    <p class="small">
+        Если объект не найден, возвращается <span class="status-err">404 Not Found</span>;
+        иначе — <span class="status-ok">200 OK</span> с JSON-объектом груза.
+    </p>
+
+    <h3>POST /api/cargoes — создание</h3>
+    <pre class="code">app.MapPost("/api/cargoes", (Cargo input) =&gt;
+{
+    Normalize(input);
+
+    var errors = Validate(input);
+    if (errors.Count &gt; 0)
+    {
+        return Results.ValidationProblem(errors);
+    }
+
+    lock (CargoStore.SyncRoot)
+    {
+        input.Id = CargoStore.GetNextId();
+        CargoStore.Cargoes.Add(input);
+    }
+
+    return Results.Created($"/api/cargoes/{input.Id}", input);
+});</pre>
+
+    <p class="small">
+        Перед сохранением выполняется <code>Normalize(input)</code> — обрезка пробелов —
+        и валидация по атрибутам DataAnnotations. Идентификатор назначается на сервере,
+        а заголовок <code>Location</code> указывает на созданный ресурс.
+    </p>
+
+    <div class="footer"><span><b>CargoFlow API</b> · WT-6 Minimal API</span><span class="pnum">06</span></div>
+</section>
+
+<!-- 07. PUT и DELETE -->
+<section class="sheet">
+    <div class="page-head"><span class="kicker">CRUD</span><span class="page-tag">07 / 13</span></div>
+    <h1>PUT и DELETE</h1>
+
+    <h3>PUT /api/cargoes/{id} — изменение</h3>
+    <pre class="code">app.MapPut("/api/cargoes/{id:int}", (int id, Cargo input) =&gt;
+{
+    Normalize(input);
+
+    lock (CargoStore.SyncRoot)
+    {
+        var cargo = CargoStore.Cargoes.FirstOrDefault(item =&gt; item.Id == id);
+        if (cargo is null)
+        {
+            return Results.NotFound();
+        }
+
+        var errors = Validate(input);
+        if (errors.Count &gt; 0)
+        {
+            return Results.ValidationProblem(errors);
+        }
+
+        cargo.Name = input.Name;
+        cargo.Category = input.Category;
+        cargo.Quantity = input.Quantity;
+        cargo.Location = input.Location;
+        cargo.Weight = input.Weight;
+        cargo.Description = input.Description;
+        cargo.IsAvailable = input.IsAvailable;
+
+        return Results.Ok(cargo);
+    }
+});</pre>
+
+    <h3>DELETE /api/cargoes/{id} — удаление</h3>
+    <pre class="code">app.MapDelete("/api/cargoes/{id:int}", (int id) =&gt;
+{
+    lock (CargoStore.SyncRoot)
+    {
+        var cargo = CargoStore.Cargoes.FirstOrDefault(item =&gt; item.Id == id);
+        if (cargo is null)
+        {
+            return Results.NotFound();
+        }
+
+        CargoStore.Cargoes.Remove(cargo);
+    }
+
+    return Results.NoContent();
+});</pre>
+
+    <p class="small">
+        <code>PUT</code> заменяет все изменяемые поля объекта и возвращает обновлённый груз
+        с пересчитанными <code>TotalWeight</code> и <code>Status</code>. <code>DELETE</code>
+        удаляет объект из коллекции и отвечает <span class="status-ok">204 No Content</span>
+        без тела ответа.
+    </p>
+
+    <div class="footer"><span><b>CargoFlow API</b> · WT-6 Minimal API</span><span class="pnum">07</span></div>
+</section>
+
+<!-- 07. Статусы и JSON -->
+<section class="sheet">
+    <div class="page-head"><span class="kicker">Контракт API</span><span class="page-tag">08 / 13</span></div>
+    <h1>HTTP-статусы и JSON</h1>
+
+    <table class="meta compact">
+        <tr><th style="width:58mm">Ситуация</th><th style="width:30mm">Статус</th><th>Метод Results</th></tr>
+        <tr><td>Успешный GET</td><td><span class="badge ok">200 OK</span></td><td><code>Results.Ok(...)</code></td></tr>
+        <tr><td>Успешный POST</td><td><span class="badge ok">201 Created</span></td><td><code>Results.Created(...)</code></td></tr>
+        <tr><td>Успешный DELETE</td><td><span class="badge ok">204 No Content</span></td><td><code>Results.NoContent()</code></td></tr>
+        <tr><td>Некорректные данные</td><td><span class="badge err">400 Bad Request</span></td><td><code>Results.ValidationProblem(...)</code></td></tr>
+        <tr><td>Объект не найден</td><td><span class="badge err">404 Not Found</span></td><td><code>Results.NotFound()</code></td></tr>
+    </table>
+
+    <div class="two-col">
+        <div>
+            <h3>Запрос POST</h3>
+            <pre class="code">{
+  "name": "Тестовый груз",
+  "category": "Проверка",
+  "quantity": 10,
+  "location": "Сектор T-1",
+  "weight": 1.5,
+  "description": "Проверка CRUD.",
+  "isAvailable": true
+}</pre>
+        </div>
+        <div>
+            <h3>Ответ 201 Created</h3>
+            <pre class="code">{
+  "id": 7,
+  "name": "Тестовый груз",
+  "category": "Проверка",
+  "quantity": 10,
+  "location": "Сектор T-1",
+  "weight": 1.5,
+  "description": "Проверка CRUD.",
+  "isAvailable": true,
+  "totalWeight": 15.0,
+  "status": "На складе"
+}</pre>
+        </div>
+    </div>
+
+    <h3>Ответ 400 Bad Request</h3>
+    <pre class="code">{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "errors": {
+    "Name": ["Введите название груза"],
+    "Quantity": ["Количество должно быть от 1 до 1 000 000"]
+  }
+}</pre>
+
+    <p class="small">
+        Минимальный API не выполняет валидацию DataAnnotations автоматически, поэтому
+        в проекте используется <code>Validator.TryValidateObject</code>. Ошибки группируются
+        по полям и возвращаются в формате <code>application/problem+json</code>.
+        Для успешного POST заголовок <code>Location</code> указывает на созданный ресурс:
+        <code>/api/cargoes/7</code>.
+    </p>
+
+    <div class="footer"><span><b>CargoFlow API</b> · WT-6 Minimal API</span><span class="pnum">08</span></div>
+</section>
+
+<!-- 08. OpenAPI и Swagger -->
+<section class="sheet">
+    <div class="page-head"><span class="kicker">Документация</span><span class="page-tag">09 / 13</span></div>
+    <h1>OpenAPI и Swagger UI</h1>
+
+    <p class="lead">
+        <strong>OpenAPI</strong> — это спецификация API в формате JSON. В .NET 9 документ
+        генерируется автоматически по endpoint'ам и их метаданным. <strong>Swagger UI</strong> —
+        графическая оболочка, которая читает документ и позволяет выполнять запросы.
+    </p>
+
+    <pre class="code">builder.Services.AddOpenApi(options =&gt;
+{
+    options.AddDocumentTransformer((document, _, _) =&gt;
+    {
+        document.Info = new OpenApiInfo
+        {
+            Title = "CargoFlow API",
+            Version = "v1",
+            Description = "REST API для учёта грузов на складе."
+        };
+
+        // Относительный адрес сервера: Swagger UI обращается к тому же
+        // протоколу и хосту, на котором открыта документация.
+        document.Servers = new List&lt;OpenApiServer&gt;
+        {
+            new() { Url = "/" }
+        };
+
+        return Task.CompletedTask;
+    });
+});
+
+app.MapOpenApi();                       // /openapi/v1.json
+
+app.UseSwaggerUI(options =&gt;
+{
+    options.RoutePrefix = "swagger";    // /swagger
+    options.SwaggerEndpoint("/openapi/v1.json", "CargoFlow API v1");
+});</pre>
+
+    <p class="small">
+        Документ содержит пути, параметры маршрута и query-параметры, тела запросов,
+        ответы 200/201/204/400/404 и схемы <code>Cargo</code> и
+        <code>HttpValidationProblemDetails</code>. Метаданные задаются методами
+        <code>WithSummary</code>, <code>WithDescription</code>, <code>Accepts</code>,
+        <code>Produces</code> и <code>ProducesValidationProblem</code>.
+        Дополнительно подключён Scalar UI: <code>/scalar/v1</code>.
+    </p>
+
+    <div class="figure">
+        <img src="report/assets/swagger-overview.png" style="width:115mm" alt="Swagger UI CargoFlow API" />
+        <div class="figcaption"><b>Рис. 1.</b> Swagger UI опубликованного API: описание и относительный адрес сервера <code>/</code></div>
+    </div>
+
+    <div class="footer"><span><b>CargoFlow API</b> · WT-6 Minimal API</span><span class="pnum">09</span></div>
+</section>
+
+<!-- 09. Тестирование -->
+<section class="sheet">
+    <div class="page-head"><span class="kicker">Проверка</span><span class="page-tag">10 / 13</span></div>
+    <h1>Результаты тестирования</h1>
+
+    <p class="small">
+        Полный цикл CRUD выполнен локально, в Docker-контейнере и на публичном адресе Render.
+        На рисунке 2 показан реальный ответ <code>200 OK</code> на
+        <code>GET /api/cargoes</code>, полученный через Swagger UI.
+    </p>
+
+    <div class="figure">
+        <img src="report/assets/swagger-test.png" style="width:150mm" alt="Выполнение GET /api/cargoes через Swagger UI" />
+        <div class="figcaption"><b>Рис. 2.</b> Выполнение GET /api/cargoes через Swagger UI на Render</div>
+    </div>
+
+    <table class="meta compact">
+        <tr><th style="width:70mm">Запрос</th><th style="width:32mm">Результат</th><th>Проверка</th></tr>
+        <tr><td><code>GET /api/cargoes</code></td><td>200, 6 объектов</td><td>Список и вычисляемые поля</td></tr>
+        <tr><td><code>GET /api/cargoes/1</code></td><td>200</td><td>Объект по идентификатору</td></tr>
+        <tr><td><code>GET /api/cargoes/999</code></td><td>404</td><td>Несуществующий объект</td></tr>
+        <tr><td><code>GET /api/cargoes?search=ноут</code></td><td>200, 1 объект</td><td>Поиск без учёта регистра</td></tr>
+        <tr><td><code>POST /api/cargoes</code></td><td>201, <code>id = 7</code></td><td>Создание, заголовок Location</td></tr>
+        <tr><td><code>POST</code> с пустыми полями</td><td>400</td><td>Валидация и problem+json</td></tr>
+        <tr><td><code>PUT /api/cargoes/7</code></td><td>200</td><td>Обновление и пересчёт TotalWeight</td></tr>
+        <tr><td><code>PUT /api/cargoes/999</code></td><td>404</td><td>Изменение несуществующего объекта</td></tr>
+        <tr><td><code>DELETE /api/cargoes/7</code></td><td>204</td><td>Удаление без тела ответа</td></tr>
+        <tr><td><code>GET /api/cargoes/7</code> после DELETE</td><td>404</td><td>Состояние коллекции изменилось</td></tr>
+    </table>
+
+    <p class="small">
+        Локальный лог запросов и ответов сохранён в <code>docs/api-testing.md</code>.
+        Публичная проверка CRUD на Render: <code>POST</code> — 201, <code>PUT</code> — 200,
+        <code>GET</code> — 200, <code>DELETE</code> — 204, повторный <code>GET</code> — 404,
+        <code>POST</code> с пустыми полями — 400.
+    </p>
+
+    <div class="footer"><span><b>CargoFlow API</b> · WT-6 Minimal API</span><span class="pnum">10</span></div>
+</section>
+
+<!-- 10. Docker -->
+<section class="sheet">
+    <div class="page-head"><span class="kicker">Контейнеризация</span><span class="page-tag">11 / 13</span></div>
+    <h1>Docker</h1>
+
+    <p class="small">
+        Используется многоэтапная сборка: SDK-образ нужен только для restore и publish,
+        а в итоговый runtime-образ попадают лишь опубликованные файлы. Приложение слушает
+        <code>0.0.0.0</code> и читает порт из переменной окружения <code>PORT</code>.
+    </p>
+
+    <pre class="code">FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+COPY wt-lab6-6minimalapi-yushkevich.csproj ./
+RUN dotnet restore
+
+COPY . .
+RUN dotnet publish wt-lab6-6minimalapi-yushkevich.csproj \
+    -c Release \
+    -o /app/publish \
+    /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+WORKDIR /app
+
+COPY --from=build /app/publish .
+
+ENV ASPNETCORE_URLS=http://0.0.0.0:10000
+ENV PORT=10000
+EXPOSE 10000
+
+ENTRYPOINT ["dotnet", "wt-lab6-6minimalapi-yushkevich.dll"]</pre>
+
+    <h3>Сборка и запуск</h3>
+    <pre class="console"><span class="cmd">$ docker build -t wt-lab6-6minimalapi .</span>
+<span class="dim">#14 [build 4/6] RUN dotnet restore</span>
+#14 Restored /src/wt-lab6-6minimalapi-yushkevich.csproj
+<span class="dim">#16 [build 6/6] RUN dotnet publish ...</span>
+#16 wt-lab6-6minimalapi-yushkevich -&gt; /app/publish/
+#18 naming to docker.io/library/wt-lab6-6minimalapi:latest done
+
+<span class="cmd">$ docker run --rm -p 10000:10000 wt-lab6-6minimalapi</span>
+info: Now listening on: http://0.0.0.0:10000
+info: Hosting environment: Production
+
+<span class="cmd">$ curl -i http://localhost:10000/api/cargoes</span>
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8</pre>
+
+    <div class="note">
+        <strong>Результат.</strong> Образ собран, контейнер запущен в окружении
+        <code>Production</code>. Внутри контейнера проверены <code>/</code>,
+        <code>/api/cargoes</code>, <code>/swagger</code> и <code>/openapi/v1.json</code>.
+        Полный CRUD в контейнере также отработал: 201 → 200 → 204 → 404.
+    </div>
+
+    <div class="footer"><span><b>CargoFlow API</b> · WT-6 Minimal API</span><span class="pnum">11</span></div>
+</section>
+
+<!-- 11. Git и Render -->
+<section class="sheet">
+    <div class="page-head"><span class="kicker">Публикация</span><span class="page-tag">12 / 13</span></div>
+    <h1>Git и публикация на Render</h1>
+
+    <p class="small">
+        Проект размещён в репозитории
+        <a href="https://github.com/Balur77/wt-lab6-6minimalapi-yushkevich">github.com/Balur77/wt-lab6-6minimalapi-yushkevich</a>.
+        История содержит пять осмысленных коммитов: инициализация проекта, модель и хранилище,
+        CRUD с OpenAPI, Docker и документация, а также исправление OpenAPI для HTTPS.
+    </p>
+
+    <div class="figure">
+        <img src="report/assets/github-commits.png" style="width:132mm" alt="История коммитов GitHub" />
+        <div class="figcaption"><b>Рис. 3.</b> История коммитов в GitHub-репозитории</div>
+    </div>
+
+    <h3>Render Web Service</h3>
+    <table class="meta compact">
+        <tr><td style="width:36mm">Сервис</td><td>wt-lab6-6minimalapi-yushkevich</td></tr>
+        <tr><td>Тип</td><td>Web Service, Runtime: Docker, ветка <code>main</code></td></tr>
+        <tr><td>Dockerfile</td><td><code>./Dockerfile</code></td></tr>
+        <tr><td>Статус</td><td><span class="badge ok">Live</span> — публичные endpoint'ы отвечают 200</td></tr>
+        <tr><td>Публичный URL</td><td><a href="https://wt-lab6-6minimalapi-yushkevich.onrender.com">https://wt-lab6-6minimalapi-yushkevich.onrender.com</a></td></tr>
+        <tr><td>Документация</td><td><a href="https://wt-lab6-6minimalapi-yushkevich.onrender.com/swagger">/swagger</a>, <a href="https://wt-lab6-6minimalapi-yushkevich.onrender.com/scalar/v1">/scalar/v1</a></td></tr>
+    </table>
+
+    <div class="note">
+        <strong>Повторный deployment.</strong> После коммита <code>69a1c95</code>
+        (<em>fix: use relative OpenAPI server URL for HTTPS deployments</em>) Render
+        автоматически пересобрал контейнер. В публичном OpenAPI-документе адрес сервера
+        стал относительным (<code>/</code>), после чего Swagger UI на HTTPS успешно
+        выполнил <code>GET /api/cargoes</code> и получил <code>200 OK</code> (рис. 2).
+    </div>
+
+    <div class="footer"><span><b>CargoFlow API</b> · WT-6 Minimal API</span><span class="pnum">12</span></div>
+</section>
+
+<!-- 12. Заключение -->
+<section class="sheet">
+    <div class="page-head"><span class="kicker">Итоги</span><span class="page-tag">13 / 13</span></div>
+    <h1>Заключение</h1>
+
+    <p class="lead">
+        В ходе лабораторной работы разработан и опубликован REST API для учёта грузов
+        на складе. Приложение реализовано на ASP.NET Core Minimal API, работает с JSON,
+        поддерживает полный набор CRUD-операций и использует корректные HTTP-статусы.
+    </p>
+
+    <h3>Что освоено</h3>
+    <ul class="checklist">
+        <li>Создание проекта Minimal API и регистрация endpoint'ов через <code>MapGet</code>, <code>MapPost</code>, <code>MapPut</code>, <code>MapDelete</code>.</li>
+        <li>Привязка параметров маршрута, query-параметров и тела запроса JSON.</li>
+        <li>Возврат результатов через <code>Results.Ok</code>, <code>Results.Created</code>, <code>Results.NoContent</code>, <code>Results.NotFound</code> и <code>Results.ValidationProblem</code>.</li>
+        <li>Валидация модели по атрибутам DataAnnotations и формирование <code>400 Bad Request</code>.</li>
+        <li>Автоматическая генерация OpenAPI-документа, подключение Swagger UI и Scalar UI.</li>
+        <li>Многоэтапная Docker-сборка, запуск контейнера и публикация на Render.</li>
+        <li>Работа с Git: осмысленные коммиты, удалённый репозиторий, повторный deployment.</li>
+    </ul>
+
+    <h3>Ограничения</h3>
+    <p class="small">
+        Данные хранятся в памяти процесса, поэтому после перезапуска приложения и нового
+        deployment на Render коллекция восстанавливается из начального набора. Несколько
+        экземпляров приложения не разделяют данные между собой. Для перехода к постоянному
+        хранению потребуется заменить <code>CargoStore</code> на слой доступа к PostgreSQL
+        (например, Entity Framework Core), добавить строку подключения и миграции.
+    </p>
+
+    <div class="callout">
+        <span class="label">Итоговые ссылки</span>
+        Публичный API: <a href="https://wt-lab6-6minimalapi-yushkevich.onrender.com">https://wt-lab6-6minimalapi-yushkevich.onrender.com</a><br />
+        Swagger UI: <a href="https://wt-lab6-6minimalapi-yushkevich.onrender.com/swagger">https://wt-lab6-6minimalapi-yushkevich.onrender.com/swagger</a><br />
+        GitHub: <a href="https://github.com/Balur77/wt-lab6-6minimalapi-yushkevich">https://github.com/Balur77/wt-lab6-6minimalapi-yushkevich</a>
+    </div>
+
+    <div class="cover-sign" style="color:#64748b; margin-top:12mm;">
+        <div>Работа выполнена и проверена локально, в Docker и на Render</div>
+        <div>Подпись: <span class="sign-line" style="border-color:#94a3b8"></span> <span style="color:#334155;font-weight:600">Юшкевич В.</span></div>
+    </div>
+
+    <div class="footer"><span><b>CargoFlow API</b> · WT-6 Minimal API</span><span class="pnum">13</span></div>
+</section>
+
+</body>
+</html>
